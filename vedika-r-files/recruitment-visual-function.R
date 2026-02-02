@@ -12,39 +12,47 @@
 
 ##### STEP 1: Load in cleaned dataset and filter 
 # Read in data and converting missing data to NA values
-library(tidyverse)
-clean_coral <- read_csv(here::here("vedika-r-files", "data", "coral_tidy_2024_with_dynamics.csv"), na = c("UK", "MK", "?", "MD", "US", "NS", "MissingObs", "Na", "NA"))
-
-# Coral color way - consistent across all visualizations
-
-coral_colors <- c(
-  Acr = "blue", 
-  Poc = "red", 
-  Por = "darkgreen", 
-  Mil = "darkorange"
-)
-
-clean_coral <- clean_coral |> 
-  # Removing plots from backreef surveys 
-  filter(str_detect(transect, "T")) |> 
-  # Change volume variables to numeric
-  mutate(
-    height = as.numeric(height),
-    width  = as.numeric(width),
-    length = as.numeric(length),
-    # Create volume (cm^2), z (m), and y (m) columns  
-    y_m = y / 100, 
-    z_m = z /100, 
-    # Acropora were input as "A" in 2024, converting to "Acr" 
-    taxa = case_when(taxa == "A" ~ "Acr", 
-                     TRUE ~ taxa)) 
-
-clean_coral_lter1 <- clean_coral %>% filter(site == "LTER1", habitat == "BR") 
-
-unique(clean_coral_lter1$habitat)
 
 ###_______________ Step 2: Create the function for transects at LTER1 only 
-transect_recruitment <- function(coral_data, habitat = "BR")
+transect_recruitment <- function(coral_data, site_name, habitat_name = "BR") {
+  
+  # Establish shared colors per taxa
+  coral_colors <- c(
+    Acr = "blue", 
+    Poc = "red", 
+    Por = "darkgreen", 
+    Mil = "darkorange"
+  )
+  
+  # 1. Filter and summarize recruits
+  plot_data <- coral_data %>%
+    filter(site == site_name,
+           habitat == habitat_name) %>%
+    group_by(transect, taxa, year) %>%
+    summarize(
+      n_recruits = sum(dyn_recruitment, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      recruits_std = n_recruits / 5   # Standardize per 5 m^2
+    )
+  
+  # 2. Plot the standardized recruitment per year
+  ggplot(plot_data, aes(x = factor(year), y = recruits_std, color = taxa, group = taxa)) +
+    geom_line() +
+    geom_point() +
+    facet_grid(transect ~ taxa) + 
+    scale_color_manual(values = coral_colors) + 
+    labs(
+      x = "Year",
+      y = "Total Recruits per 5 m²",
+      title = paste("Standardized Coral Recruitment at", site_name),
+      color = "Taxa"
+    ) +
+    theme_minimal()
+}
+
+transect_recruitment(coral_data = clean_coral, site_name = "LTER1")
 
 
 
