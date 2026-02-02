@@ -6,6 +6,7 @@
 # - Sum up total recruits BY TRANSECT, then divide by 5 m^2 to standardize 
 
 ###_______________ Step 2: Create the function for transects at LTER1 only 
+library(ggthemes)
 transect_recruitment <- function(coral_data, site_name = NULL, habitat_name) {
   
   # Establish shared colors per taxa
@@ -133,7 +134,7 @@ habitat_recruitment <- function(coral_data) {
       recruits_std = n_recruits / 5   # Standardize per 5 m^2
     )
   
-  # 2. Plot the standardized recruitment per year
+  # Plot the standardized recruitment per year
   plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, color = taxa, group = taxa)) +
     geom_line() +
     geom_point() +
@@ -147,7 +148,8 @@ habitat_recruitment <- function(coral_data) {
     )  +
     theme_igray() + 
     scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
-    theme(axis.text.x = element_text(angle = 45, vjust = .5))
+    theme(axis.text.x = element_text(angle = 45, vjust = .5)) + 
+    scale_y_continuous(limits = c(0,150), breaks = c(25, 50, 75, 100, 125, 150))
   
   
   

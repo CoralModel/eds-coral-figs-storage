@@ -10,8 +10,9 @@ Several modifications are required for the dynamic coral data prior to functiona
 ```{r}
 #| warning: false
 #| message: false
-#| collapse: true
+#| code-fold: true
 library(tidyverse)
+library(ggthemes)
 clean_coral <- read_csv(here::here("vedika-r-files", "data", "coral_tidy_2024_with_dynamics.csv"), na = c("UK", "MK", "?", "MD", "US", "NS", "MissingObs", "Na", "NA"))
 
 # Coral color way - consistent across all visualizations
@@ -45,7 +46,6 @@ clean_coral <- clean_coral |>
 The function `transect-recruitment` is sourced locally from the `recruitment-visual-function.R` file stored in this repository. This function is intended to create the total standardized recruitment per year at each transect for a specified site. Each figure generated is stored in its respective subfolder (`transect-site-recruitment`).
 
 ```{r}
-library(sourcetools)
 source(here::here("vedika-r-files", "recruitment-visual-function.R"))
 ```
 
@@ -56,7 +56,7 @@ transect_recruitment(coral_data = clean_coral, site_name = "LTER2", habitat = "O
 
 ## Plotting Recruitment Overtime at Sites 
 
-The function `site-recruitment` is sourced locally from the `recruitment-visual-function.R` file stored in this repository. This function is intended to create the total standardized recruitment per year at each site for a specified habitat across all taxa. Each figure generated is stored in its respective subfolder (`transect-site-recruitment`).
+The function `site-recruitment` is sourced locally from the `recruitment-visual-function.R` file stored in this repository. This function is intended to create the total standardized recruitment per year at each site for a specified habitat across all taxa. Each figure generated will be stored in its respective subfolder (`transect-site-recruitment`).
 
 ```{r, fig.asp= .8}
 # Generate plots for each site at a specific habtat
@@ -68,5 +68,6 @@ site_recruitment(coral_data = clean_coral, habitat_name = "BR")
 The function `habitat-recruitment` is sourced locally from the `recruitment-visual-function.R` file stored in this repository. This function is intended to create the total standardized recruitment per year at each habitat across all taxa.
 
 ```{r}
+# Generate plots for each habitat 
 habitat_recruitment(clean_coral)
 ```
