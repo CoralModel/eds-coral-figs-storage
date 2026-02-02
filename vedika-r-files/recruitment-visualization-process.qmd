@@ -8,12 +8,12 @@ format: html
 Several modifications are required for the dynamic coral data prior to functional analysis. The following coding block details handling missing data and establishing a shared color gradient for each taxa.
 
 ```{r}
-#| warning: false
 #| message: false
+#| warning: false
 #| code-fold: true
 library(tidyverse)
 library(ggthemes)
-clean_coral <- read_csv(here::here("vedika-r-files", "data", "coral_tidy_2024_with_dynamics.csv"), na = c("UK", "MK", "?", "MD", "US", "NS", "MissingObs", "Na", "NA"))
+clean_coral <- read_csv(here::here("vedika-r-files", "data", "coral_tidy_dyn_2013-2024 - coral_tidy_dyn_2013-2024.csv"), na = c("UK", "MK", "?", "MD", "US", "NS", "MissingObs", "Na", "NA"))
 
 # Coral color way - consistent across all visualizations
 coral_colors <- c(
@@ -25,7 +25,9 @@ coral_colors <- c(
 
 clean_coral <- clean_coral |> 
   # Removing plots from backreef surveys 
-  filter(str_detect(transect, "T")) |> 
+  filter(
+    transect %in% c("T01", "T02", "T03", "T04")) %>%
+    #str_detect(transect, "T")) |> 
   # Change volume variables to numeric
   mutate(
     height = as.numeric(height),
@@ -49,17 +51,19 @@ The function `transect-recruitment` is sourced locally from the `recruitment-vis
 source(here::here("vedika-r-files", "recruitment-visual-function.R"))
 ```
 
-```{r, fig.asp = .8}
+```{r}
 # Generate plots for each transect (ex. at site LTER1 for BR)
-transect_recruitment(coral_data = clean_coral, site_name = "LTER2", habitat = "OR")
+transect_recruitment(coral_data = clean_coral, site_name = "LTER2", habitat = "BR")
 ```
 
-## Plotting Recruitment Overtime at Sites 
+## Plotting Recruitment Overtime at Sites
 
 The function `site-recruitment` is sourced locally from the `recruitment-visual-function.R` file stored in this repository. This function is intended to create the total standardized recruitment per year at each site for a specified habitat across all taxa. Each figure generated will be stored in its respective subfolder (`transect-site-recruitment`).
 
-```{r, fig.asp= .8}
-# Generate plots for each site at a specific habtat
+```{r}
+#| warnings: false
+#| message: false
+# Generate plots for each site at a specific habitat
 site_recruitment(coral_data = clean_coral, habitat_name = "BR")
 ```
 

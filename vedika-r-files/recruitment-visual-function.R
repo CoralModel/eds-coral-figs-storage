@@ -31,16 +31,17 @@ transect_recruitment <- function(coral_data, site_name = NULL, habitat_name) {
     )
   
   # Plot standardized recruitment per year
-  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, color = taxa, group = taxa)) +
-    geom_line() +
-    geom_point() +
-    facet_grid(transect ~ taxa) + 
-    scale_color_manual(values = coral_colors) + 
+  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa, group = taxa)) +
+    # geom_line() +
+    # geom_point() +
+    geom_col() +
+    facet_grid(transect ~ taxa, scale = "free") + 
+    scale_fill_manual(values = coral_colors) + 
     labs(
       x = "Year",
       y = "Total Recruits per 5 m²",
       title = paste("Standardized Coral Recruitment at", site_name, "(", habitat_name, ")"),
-      color = "Taxa"
+      fill = "Taxa"
     ) +
     theme_igray() + 
     scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
@@ -73,30 +74,30 @@ site_recruitment <- function(coral_data, habitat_name) {
     Mil = "darkorange"
   )
   
-  # 1. Filter and summarize recruits
+  # Filter and summarize recruits
   plot_data <- coral_data %>% 
     filter(habitat == habitat_name) %>%
-    group_by(site, taxa, year) %>%
+    group_by(transect, site, taxa, year) %>%
     summarize(
       n_recruits = sum(dyn_recruitment, na.rm = TRUE),
       .groups = "drop"
     ) %>%
     mutate(
-     # habitat = factor(habitat, levels = c("BR" = "Backreef", "OR" = "Outer Reef")), 
       recruits_std = n_recruits / 5   # Standardize per 5 m^2
     )
   
-  # 2. Plot the standardized recruitment per year
-  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, color = taxa, group = taxa)) +
-    geom_line() +
-    geom_point() +
+  # Plot the standardized recruitment per year
+  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa, group = taxa)) +
+    # geom_line() +
+    # geom_point() +
+    geom_col() + 
     facet_grid(site ~ taxa) + 
-    scale_color_manual(values = coral_colors) + 
+    scale_fill_manual(values = coral_colors) + 
     labs(
       x = "Year",
       y = "Total Recruits per 5 m²",
      title = paste("Standardized Coral Recruitment at Each Site in", habitat_name),
-      color = "Taxa"
+      fill = "Taxa"
     )  +
   theme_igray() + 
   scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
@@ -122,29 +123,29 @@ habitat_recruitment <- function(coral_data) {
     Mil = "darkorange"
   )
   
-  # 1. Filter and summarize recruits
+  # Filter and summarize recruits
   plot_data <- coral_data %>% 
-    group_by(habitat, taxa, year) %>%
+    group_by(transect, habitat, taxa, year) %>%
     summarize(
       n_recruits = sum(dyn_recruitment, na.rm = TRUE),
       .groups = "drop"
     ) %>%
     mutate(
-      # habitat = factor(habitat, levels = c("BR" = "Backreef", "OR" = "Outer Reef")), 
       recruits_std = n_recruits / 5   # Standardize per 5 m^2
     )
   
   # Plot the standardized recruitment per year
-  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, color = taxa, group = taxa)) +
-    geom_line() +
-    geom_point() +
-    facet_grid(habitat ~ taxa) + 
-    scale_color_manual(values = coral_colors) + 
+  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa, group = taxa)) +
+    # geom_line() +
+    # geom_point() +
+    geom_col()+
+    facet_grid(habitat ~ taxa, scale = "free") + 
+    scale_fill_manual(values = coral_colors) + 
     labs(
       x = "Year",
       y = "Total Recruits per 5 m²",
       title = "Standardized Coral Recruitment at Each Habitat",
-      color = "Taxa"
+      fill = "Taxa"
     )  +
     theme_igray() + 
     scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
