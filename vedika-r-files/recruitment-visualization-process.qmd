@@ -16,30 +16,28 @@ library(ggthemes)
 clean_coral <- read_csv(here::here("vedika-r-files", "data", "coral_tidy_dyn_2013-2024 - coral_tidy_dyn_2013-2024.csv"), na = c("UK", "MK", "?", "MD", "US", "NS", "MissingObs", "Na", "NA"))
 
 # Coral color way - consistent across all visualizations
+
 coral_colors <- c(
-  Acr = "blue", 
-  Poc = "red", 
-  Por = "darkgreen", 
-  Mil = "darkorange"
+ Acr = "blue", 
+ Poc = "red", 
+ Por = "darkgreen", 
+ Mil = "darkorange"
 )
 
 clean_coral <- clean_coral |> 
   # Removing plots from backreef surveys 
-  filter(
-    transect %in% c("T01", "T02", "T03", "T04")) %>%
-    #str_detect(transect, "T")) |> 
-  # Change volume variables to numeric
+  filter(str_detect(transect, "T")) |> 
+# Change volume variables to numeric
   mutate(
     height = as.numeric(height),
     width  = as.numeric(width),
     length = as.numeric(length),
-    # Create volume (cm^2), z (m), and y (m) columns  
-    y_m = y / 100, 
-    z_m = z /100, 
+      # Create volume (cm^2), z (m), and y (m) columns  
+     y_m = y / 100, 
+     z_m = z /100, 
     # Acropora were input as "A" in 2024, converting to "Acr" 
     taxa = case_when(taxa == "A" ~ "Acr", 
                      TRUE ~ taxa)) 
-
 
 ```
 
@@ -53,7 +51,7 @@ source(here::here("vedika-r-files", "recruitment-visual-function.R"))
 
 ```{r}
 # Generate plots for each transect (ex. at site LTER1 for BR)
-transect_recruitment(coral_data = clean_coral, site_name = "LTER2", habitat = "BR")
+transect_recruitment(coral_data = clean_coral, site_name = "LTER5", habitat = "OR")
 ```
 
 ## Plotting Recruitment Overtime at Sites
@@ -64,7 +62,7 @@ The function `site-recruitment` is sourced locally from the `recruitment-visual-
 #| warnings: false
 #| message: false
 # Generate plots for each site at a specific habitat
-site_recruitment(coral_data = clean_coral, habitat_name = "BR")
+site_recruitment(coral_data = clean_coral, habitat_name = "OR")
 ```
 
 ## Plotting Recruitment Overtime at Each Habitat
