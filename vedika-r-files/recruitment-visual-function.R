@@ -43,7 +43,7 @@ transect_recruitment <- function(coral_data, site_name = NULL, habitat_name) {
       title = paste("Standardized Coral Recruitment at", site_name, "(", habitat_name, ")"),
       fill = "Taxa"
     ) +
-    theme_igray() + 
+    theme_light() + 
     scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
     theme(axis.text.x = element_text(angle = 45, vjust = .5))
   
@@ -147,7 +147,7 @@ habitat_recruitment <- function(coral_data) {
       title = "Standardized Coral Recruitment at Each Habitat",
       fill = "Taxa"
     )  +
-    theme_igray() + 
+    theme_light() + 
     scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
     theme(axis.text.x = element_text(angle = 45, vjust = .5)) + 
     scale_y_continuous(limits = c(0,150), breaks = c(25, 50, 75, 100, 125, 150))

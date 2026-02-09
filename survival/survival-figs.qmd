@@ -51,7 +51,7 @@ coral_death <- coral %>%
 ```{r}
 survival_plot(data = coral_death, site = "LTER4", habitat = "OR")
 ```
+
 ```{r}
 survival_plot(data = coral_death, site = "LTER1")
 ```
-
