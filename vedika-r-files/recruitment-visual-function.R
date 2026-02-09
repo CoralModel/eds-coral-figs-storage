@@ -113,7 +113,7 @@ plot_transect
 }
 
 #########
-habitat_recruitment <- function(coral_data) {
+habitat_recruitment <- function(site = NULL, coral_data) {
   
   # Establish shared colors per taxa
   coral_colors <- c(
@@ -139,7 +139,7 @@ habitat_recruitment <- function(coral_data) {
     # geom_line() +
     # geom_point() +
     geom_col()+
-    facet_grid(habitat ~ taxa, scale = "free") + 
+    facet_grid(habitat ~ taxa, scale = "free") + guides(fill = "none") + 
     scale_fill_manual(values = coral_colors) + 
     labs(
       x = "Year",
