@@ -138,7 +138,7 @@ habitat_recruitment <- function(site = NULL, coral_data) {
   plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa, group = taxa)) +
     # geom_line() +
     # geom_point() +
-    geom_col()+
+    geom_col()+ 
     facet_grid(habitat ~ taxa, scale = "free") + guides(fill = "none") + 
     scale_fill_manual(values = coral_colors) + 
     labs(
