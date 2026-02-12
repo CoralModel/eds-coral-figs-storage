@@ -20,7 +20,7 @@ else if(is_null(habitat)){
     ggplot(aes(volume, survival, color = taxa)) +
     geom_point(alpha = 0.4) +
     scale_color_manual(values = coral_colors) +
-    facet_grid(habitat~taxa, scales = "free") +
+    facet_grid(transect~taxa, scales = "free") +
     labs(title = paste("Coral survival at", site),
          y = "",
          x = "Initial volume (cm^3)") +

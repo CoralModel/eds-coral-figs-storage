@@ -77,8 +77,9 @@ survival_habitat <-
       theme(legend.position = "none",
             axis.text.x = element_text(size = 6, angle = 45, hjust = 1))
 
-ggsave("survival_habitat.png", survival_habitat, width = 9, height = 5)
+#ggsave("survival_habitat.png", survival_habitat, width = 9, height = 5)
+```
+```{r}
+survival_plot(coral_death, site = "LTER1", habitat = "BR")
 ```
 
-=======
->>>>>>> cfd0bee67444046bccd4659e83a4bb04e6d9f326
