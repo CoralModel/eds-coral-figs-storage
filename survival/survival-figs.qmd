@@ -54,4 +54,27 @@ survival_plot(data = coral_death, site = "LTER4", habitat = "OR")
 ```{r}
 survival_plot(data = coral_death, site = "LTER1")
 ```
+```{r}
+survival_habitat <- survival_plot(data = coral_death)
+
+ggsave("survival_habitat.png", survival_habitat, width = 9, height = 5)
+```
+
+```{r}
+survival_habitat <- 
+  ggplot(coral_death, aes(volume, survival, color = taxa)) +
+      geom_point(alpha = 0.4) +
+      scale_color_manual(values = coral_colors) +
+      facet_grid(habitat~taxa, scales = "free") +
+      scale_y_continuous(labels = scales::percent) +
+  
+      labs(title = paste("Coral survivorship by habitat (2013-2024)"),
+           y = "Probability of survival",
+           x = bquote("Initial volume" ~(cm^3))) +
+      theme_light() +
+      theme(legend.position = "none",
+            axis.text.x = element_text(size = 6, angle = 45, hjust = 1))
+
+ggsave("survival_habitat.png", survival_habitat, width = 9, height = 5)
+```
 
