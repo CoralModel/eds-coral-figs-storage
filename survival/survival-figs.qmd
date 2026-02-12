@@ -51,9 +51,11 @@ coral_death <- coral %>%
 ```{r}
 survival_plot(data = coral_death, site = "LTER4", habitat = "OR")
 ```
+
 ```{r}
 survival_plot(data = coral_death, site = "LTER1")
 ```
+<<<<<<< HEAD
 ```{r}
 survival_habitat <- survival_plot(data = coral_death)
 
@@ -78,3 +80,5 @@ survival_habitat <-
 ggsave("survival_habitat.png", survival_habitat, width = 9, height = 5)
 ```
 
+=======
+>>>>>>> cfd0bee67444046bccd4659e83a4bb04e6d9f326

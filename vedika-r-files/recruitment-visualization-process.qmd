@@ -51,7 +51,7 @@ source(here::here("vedika-r-files", "recruitment-visual-function.R"))
 
 ```{r}
 # Generate plots for each transect (ex. at site LTER1 for BR)
-transect_recruitment(coral_data = clean_coral, site_name = "LTER5", habitat = "OR")
+transect_recruitment(coral_data = clean_coral, site_name = "LTER2", habitat = "BR")
 ```
 
 ## Plotting Recruitment Overtime at Sites
@@ -62,7 +62,7 @@ The function `site-recruitment` is sourced locally from the `recruitment-visual-
 #| warnings: false
 #| message: false
 # Generate plots for each site at a specific habitat
-site_recruitment(coral_data = clean_coral, habitat_name = "OR")
+site_recruitment(coral_data = clean_coral, habitat_name = "BR")
 ```
 
 ## Plotting Recruitment Overtime at Each Habitat
@@ -72,4 +72,39 @@ The function `habitat-recruitment` is sourced locally from the `recruitment-visu
 ```{r}
 # Generate plots for each habitat 
 habitat_recruitment(clean_coral)
+```
+
+```{r}
+coral <- read_csv(here("vedika-r-files", "data", "volume_corals.csv"))
+
+source(here("survival", "R", "survival_fig_function.R"))
+```
+
+```{r}
+# Initalize coral color palette
+coral_colors <- c(
+    Acr = "blue", 
+    Poc = "red", 
+    Por = "darkgreen", 
+    Mil = "darkorange"
+  )
+
+coral_death <- coral %>% 
+  group_by(coral_number) %>%
+  arrange(year) %>% 
+  mutate(survival = case_when(
+    dyn_death == 1 ~ 0,
+    is.na(length) ~ NA,
+    TRUE ~ 1
+  ), volume = case_when(
+    is.na(size_t0) ~ size_t_minus1,
+    TRUE~ size_t0
+  )
+  ) %>% 
+  ungroup()
+
+```
+
+```{r}
+survival_plot(data = coral_death, site = "LTER2", habitat = "BR")
 ```
