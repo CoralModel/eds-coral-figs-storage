@@ -135,7 +135,7 @@ plot_recruitment()
 ```{r}
 ## Let's practice with combine demographic function
 demography_plot(data = clean_coral,
-  profile_filter = "recruitment",
+  profile_filter = "survival",
   site_filter = "LTER1",
   habitat_filter = "BR",
   by_transect = T)
@@ -153,7 +153,7 @@ demography_plot_test(
 #### 
 demography_plot(
   data = clean_coral,
-  profile_filter = "recruitment",
+  profile_filter = "survival",
   site_filter = "LTER1",
   habitat_filter = "BR",
   by_transect = F

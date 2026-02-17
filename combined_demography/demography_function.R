@@ -5,6 +5,7 @@
 #   site_filter: LTER site to filter (e.g. "LTER1", "LTER2")
 #   habitat_filter: Optional habitat to filter ("OR" or "BR"), NULL shows all
 #   by_transect: If TRUE, facets by both taxa and transect; if FALSE, facets by taxa only
+library(ggtext)
 
 demography_plot <- function(data, profile_filter, site_filter, habitat_filter = NULL, by_transect = FALSE) {
   coral_colors <- c(
@@ -127,7 +128,12 @@ demography_plot <- function(data, profile_filter, site_filter, habitat_filter = 
       scale_fill_manual(values = coral_colors) +
       theme_classic() + scale_x_discrete(breaks = seq(2014, 2024, by = 2)) + 
       theme(axis.text.x = element_text(angle = 45, vjust = 0.5),
-            legend.position = "none")
+            legend.position = "none", 
+                  strip.background = element_rect(fill = "gray40"),
+                  strip.text.x = element_text(color = "white"),
+                  strip.text.y = element_markdown(color = "white"),
+                  panel.background = element_rect(fill = "transparent"),
+                  plot.background = element_rect(fill = "transparent")) 
     
     if (by_transect) {
       p <- p + facet_grid(taxa ~ transect,
