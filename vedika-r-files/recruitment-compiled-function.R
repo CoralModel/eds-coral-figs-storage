@@ -1,5 +1,6 @@
 plot_recruitment <- function(coral_data) {
   
+  # Colors per taxa
   coral_colors <- c(
     Acr = "blue", 
     Poc = "red", 
@@ -7,18 +8,25 @@ plot_recruitment <- function(coral_data) {
     Mil = "darkorange"
   )
   
+  # Process data
   plot_data <- coral_data %>%
     dplyr::group_by(transect, year, taxa, habitat) %>%
     dplyr::summarize(
       n_recruits = sum(dyn_recruitment, na.rm = TRUE),
       .groups = "drop"
     ) %>%
+    # Ensure all year × taxa × habitat × transect combinations exist
+    tidyr::complete(
+      transect, year = 2013:2024, taxa, habitat,
+      fill = list(n_recruits = 0)
+    ) %>%
     dplyr::mutate(
-      recruits_std = n_recruits / 5,
+      recruits_std = n_recruits * 5 / 25,   # Scale from 25 m2 to 5 m²
       year = factor(year, levels = 2013:2024),
       habitat = factor(habitat, levels = c("BR", "OR"))
     )
   
+  # Facet labels
   taxa_labels <- c(
     Acr = "italic('Acropora')",
     Mil = "italic('Millepora')",
@@ -31,7 +39,8 @@ plot_recruitment <- function(coral_data) {
     OR = "Fore Reef"
   )
   
-  ggplot(plot_data, aes(x = year, y = n_recruits, fill = taxa)) +
+  # Create plot
+  ggplot(plot_data, aes(x = year, y = recruits_std, fill = taxa)) +
     geom_col(width = 0.9) +
     facet_grid(
       habitat ~ taxa,
@@ -45,12 +54,12 @@ plot_recruitment <- function(coral_data) {
     theme(
       legend.position = "none",
       axis.text.x = element_text(angle = 45, hjust = 1),
-      panel.grid.major = element_line(color = "grey80"),  # major grid lines
-      panel.grid.minor = element_line(color = "grey90"),  # minor grid lines
+      panel.grid.major = element_line(color = "grey80"),
+      panel.grid.minor = element_line(color = "grey90"),
       panel.background = element_rect(fill = "transparent", color = NA),
       plot.background  = element_rect(fill = "transparent", color = NA),
       strip.background = element_rect(fill = "black"),
-      strip.text = element_text(color = "white")
+      strip.text = element_markdown(color = "white")  # ggtext
     ) +
     scale_x_discrete(breaks = seq(from = 2014, to = 2024, by = 2)) +
     labs(
