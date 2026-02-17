@@ -112,8 +112,44 @@ demography_plot <- function(data, profile_filter, site_filter, habitat_filter = 
       title = paste(site_filter, habitat_filter)
     )
   }
+
+  ## RECRUITMENT PLOT
+  else if (profile_filter == "recruitment") {
+    
+    plot_data <- data_clean %>%
+      # filter(!grepl("^P", transect)) %>%
+      group_by(transect, taxa, year) %>%
+      summarize(n_recruits = sum(dyn_recruitment, na.rm = TRUE), .groups = "drop") %>%
+      mutate(recruits_std = n_recruits / 5)
+    
+    p <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa)) +
+      geom_col() +
+      scale_fill_manual(values = coral_colors) +
+      theme_classic() + scale_x_discrete(breaks = seq(2014, 2024, by = 2)) + 
+      theme(axis.text.x = element_text(angle = 45, vjust = 0.5),
+            legend.position = "none")
+    
+    if (by_transect) {
+      p <- p + facet_grid(taxa ~ transect,
+                          labeller = labeller(transect = transect_labels, taxa = taxa_labels),
+                          drop = F)
+    } else {
+      p <- p + facet_grid(~ taxa,
+                          labeller = labeller(taxa = taxa_labels),
+                          drop = F)
+    }
+    
+    return(
+      p + labs(
+        x = "Year",
+        y = "Recruits per 5 m²",
+        title = paste(site_filter, habitat_filter)
+      )
+    )
+  }
   
+
   else {
-    stop("profile_filter must be 'growth' or 'survival'")
+    stop("profile_filter must be 'growth', 'survival', or 'recruitment'.")
   }
 }

@@ -1,15 +1,5 @@
-### The purpose of this script is to create a reproducible function for creating visualizations 
-## What is needed: cleaned, standardized dataset
-
-## thought process: incorporate total recruits in each transect per 5 m^2 (/5)
-# - Exclude "P" transects 
-# - Sum up total recruits BY TRANSECT, then divide by 5 m^2 to standardize 
-
-###_______________ Step 2: Create the function for transects at LTER1 only 
-library(ggthemes)
-transect_recruitment <- function(coral_data, site_name = NULL, habitat_name) {
+demography_plot_test <- function(data, profile_filter, site_filter, habitat_filter = NULL, by_transect = FALSE) {
   
-  # Establish shared colors per taxa
   coral_colors <- c(
     Acr = "blue", 
     Poc = "red", 
@@ -17,154 +7,132 @@ transect_recruitment <- function(coral_data, site_name = NULL, habitat_name) {
     Mil = "darkorange"
   )
   
-  # Filter and summarize recruits
-  plot_data <- coral_data %>%
-    filter(site %in% site_name,
-           habitat == habitat_name) %>%
-    group_by(transect, taxa, year) %>%
-    summarize(
-      n_recruits = sum(dyn_recruitment, na.rm = TRUE),
-      .groups = "drop"
-    ) %>%
-    mutate(
-      recruits_std = n_recruits / 5   # Standardize per 5 m^2
+  habitat_labels <- c("BR" = "Back Reef", "OR" = "Fore Reef")
+  taxa_labels <- c("Acr" = "*Acropora*", "Mil" = "*Millepora*",
+                   "Poc" = "*Pocillopora*", "Por" = "*Porites*")
+  transect_labels <- c("T01" = "T1", "T02" = "T2", "T03" = "T3", "T04" = "T4")
+  
+  data_clean <- data |> filter(site == site_filter)
+  
+  if (!is.null(habitat_filter)) {
+    data_clean <- data_clean |> filter(habitat == habitat_filter)
+  }
+  
+  # Growth
+  if (profile_filter == "growth") {
+    
+    p <- data_clean |>
+      ggplot(aes(x = size_t0, y = size_t1, color = taxa)) +
+      geom_point(alpha = 0.5) +
+      scale_color_manual(values = coral_colors) +
+      scale_x_log10(breaks = 10^(-1:5)) +
+      scale_y_log10(breaks = 10^(-1:5)) +
+      coord_equal() +
+      theme_classic() +
+      theme(legend.position = "none")
+    
+    if (by_transect) {
+      p <- p + facet_grid(taxa ~ transect,
+                          labeller = labeller(transect = transect_labels, taxa = taxa_labels),
+                          drop = FALSE)
+    } else {
+      p <- p + facet_grid(~ taxa,
+                          labeller = labeller(taxa = taxa_labels),
+                          drop = FALSE)
+    }
+    
+    return(
+      p + labs(
+        x = "Initial coral volume (cm³)",
+        y = "Final coral volume (cm³)",
+        title = paste(site_filter, habitat_filter)
+      )
     )
+  }
   
-  # Plot standardized recruitment per year
-  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa, group = taxa)) +
-    # geom_line() +
-    # geom_point() +
-    geom_col() +
-    facet_grid(transect ~ taxa, scale = "free") + 
-    scale_fill_manual(values = coral_colors) + 
-    labs(
-      x = "Year",
-      y = "Total Recruits per 5 m²",
-      title = paste("Standardized Coral Recruitment at", site_name, "(", habitat_name, ")"),
-      fill = "Taxa"
-    ) +
-    theme_light() + 
-    scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
-    theme(axis.text.x = element_text(angle = 45, vjust = .5))
-  
-  
-  
-  ## Save individual plots 
- # ggsave(plot_transect, file = "recruitment-figs/transect-recruitment/transect-recruitment.png")
-  print(unique(plot_data$transect))
-  plot_transect
-}
-
-########## recruitment vs year for sites (based on habitat)
-### The purpose of this script is to create a reproducible function for creating visualizations 
-## What is needed: cleaned, standardized dataset
-
-## thought process: incorporate total recruits in each transect per 5 m^2 (/5)
-# - Exclude "P" transects 
-# - Sum up total recruits BY TRANSECT, then divide by 5 m^2 to standardize 
-
-###_______________ Step 2: Create the function for transects at LTER1 only 
-site_recruitment <- function(coral_data, habitat_name) {
-  
-  # Establish shared colors per taxa
-  coral_colors <- c(
-    Acr = "blue", 
-    Poc = "red", 
-    Por = "darkgreen", 
-    Mil = "darkorange"
-  )
-  
-  # Filter and summarize recruits
-  plot_data <- coral_data %>% 
-    filter(habitat == habitat_name) %>%
-    group_by(transect, site, taxa, year) %>%
-    summarize(
-      n_recruits = sum(dyn_recruitment, na.rm = TRUE),
-      .groups = "drop"
-    ) %>%
-    mutate(
-      recruits_std = n_recruits / 5   # Standardize per 5 m^2
+  # Survival
+  else if (profile_filter == "survival") {
+    
+    coral_death <- data_clean %>% 
+      group_by(coral_number) %>%
+      arrange(year) %>% 
+      mutate(
+        survival = case_when(
+          dyn_death == 1 ~ 0,
+          is.na(length) ~ NA,
+          TRUE ~ 1
+        ),
+        volume = case_when(
+          is.na(size_t0) ~ size_t_minus1,
+          TRUE ~ size_t0
+        )
+      ) %>% 
+      ungroup()
+    
+    p <- coral_death |>
+      ggplot(aes(x = volume, y = survival, color = taxa)) +
+      geom_point(alpha = 0.5) +
+      scale_color_manual(values = coral_colors) +
+      scale_x_log10(breaks = 10^(-1:5)) +
+      theme_classic() +
+      theme(legend.position = "none")
+    
+    if (by_transect) {
+      p <- p + facet_grid(taxa ~ transect,
+                          labeller = labeller(transect = transect_labels, taxa = taxa_labels),
+                          drop = FALSE)
+    } else {
+      p <- p + facet_grid(~ taxa,
+                          labeller = labeller(taxa = taxa_labels),
+                          drop = FALSE)
+    }
+    
+    return(
+      p + labs(
+        x = "Initial coral volume (cm³)",
+        y = "Survival probability",
+        title = paste(site_filter, habitat_filter)
+      )
     )
+  }
   
-  # Plot the standardized recruitment per year
-  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa, group = taxa)) +
-    # geom_line() +
-    # geom_point() +
-    geom_col() + 
-    facet_grid(site ~ taxa) + 
-    scale_fill_manual(values = coral_colors) + 
-    labs(
-      x = "Year",
-      y = "Total Recruits per 5 m²",
-     title = paste("Standardized Coral Recruitment at Each Site in", habitat_name),
-      fill = "Taxa"
-    )  +
-  theme_igray() + 
-  scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
-  theme(axis.text.x = element_text(angle = 45, vjust = .5))
-
-
-
-## Save individual plots 
-# ggsave(plot_transect, file = "recruitment-figs/transect-recruitment/transect-recruitment.png")
-#print(unique(plot_data$site))
-plot_transect
-  
-}
-
-#########
-habitat_recruitment <- function(site = NULL, coral_data) {
-  
-  # Establish shared colors per taxa
-  coral_colors <- c(
-    Acr = "blue", 
-    Poc = "red", 
-    Por = "darkgreen", 
-    Mil = "darkorange"
-  )
-  
-  # Filter and summarize recruits
-  plot_data <- coral_data %>% 
-    group_by(transect, habitat, taxa, year) %>%
-    summarize(
-      n_recruits = sum(dyn_recruitment, na.rm = TRUE),
-      .groups = "drop"
-    ) %>%
-    mutate(
-      recruits_std = n_recruits / 5   # Standardize per 5 m^2
+  # Recruitment
+  else if (profile_filter == "recruitment") {
+    
+    plot_data <- data_clean %>%
+     # filter(!grepl("^P", transect)) %>%
+      group_by(transect, taxa, year) %>%
+      summarize(n_recruits = sum(dyn_recruitment, na.rm = TRUE), .groups = "drop") %>%
+      mutate(recruits_std = n_recruits / 5)
+    
+    p <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa)) +
+      geom_col() +
+      scale_fill_manual(values = coral_colors) +
+      theme_classic() +
+      theme(axis.text.x = element_text(angle = 45, vjust = 0.5),
+            legend.position = "none")
+    
+    if (by_transect) {
+      p <- p + facet_grid(taxa ~ transect,
+                          labeller = labeller(transect = transect_labels, taxa = taxa_labels),
+                          drop = F)
+    } else {
+      p <- p + facet_grid(~ taxa,
+                          labeller = labeller(taxa = taxa_labels),
+                          drop = F)
+    }
+    
+    return(
+      p + labs(
+        x = "Year",
+        y = "Recruits per 5 m²",
+        title = paste(site_filter, habitat_filter)
+      )
     )
+  }
   
-  # Plot the standardized recruitment per year
-  plot_transect <- ggplot(plot_data, aes(x = factor(year), y = recruits_std, fill = taxa, group = taxa)) +
-    # geom_line() +
-    # geom_point() +
-    geom_col()+ 
-    facet_grid(habitat ~ taxa, scale = "free") + guides(fill = "none") + 
-    scale_fill_manual(values = coral_colors) + 
-    labs(
-      x = "Year",
-      y = "Total Recruits per 5 m²",
-      title = "Standardized Coral Recruitment at Each Habitat",
-      fill = "Taxa"
-    )  +
-    theme_light() + 
-    scale_x_discrete(breaks = c(2014,2016, 2018, 2020, 2022, 2024)) + 
-    theme(axis.text.x = element_text(angle = 45, vjust = .5)) + 
-    scale_y_continuous(limits = c(0,150), breaks = c(25, 50, 75, 100, 125, 150))
-  
-  
-  
-  ## Save individual plots 
-  # ggsave(plot_transect, file = "recruitment-figs/transect-recruitment/transect-recruitment.png")
-  #print(unique(plot_data$site))
-  plot_transect
-  
+  # Error 
+  else {
+    stop("profile_filter must be 'growth', 'survival', or 'recruitment'")
+  }
 }
-
-
-
-
-
-
-
-

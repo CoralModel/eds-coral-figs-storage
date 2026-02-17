@@ -13,7 +13,10 @@ Several modifications are required for the dynamic coral data prior to functiona
 #| code-fold: true
 library(tidyverse)
 library(ggthemes)
-clean_coral <- read_csv(here::here("vedika-r-files", "data", "coral_tidy_dyn_2013-2024 - coral_tidy_dyn_2013-2024.csv"), na = c("UK", "MK", "?", "MD", "US", "NS", "MissingObs", "Na", "NA"))
+# clean_coral <- read_csv(here::here("vedika-r-files", "data", "coral_tidy_dyn_2013-2024 - coral_tidy_dyn_2013-2024.csv"), na = c("UK", "MK", "?", "MD", "US", "NS", "MissingObs", "Na", "NA"))
+
+clean_coral <- read_csv(here::here("vedika-r-files", "data", "volume_corals.csv"))
+
 
 # Coral color way - consistent across all visualizations
 
@@ -39,6 +42,8 @@ clean_coral <- clean_coral |>
     taxa = case_when(taxa == "A" ~ "Acr", 
                      TRUE ~ taxa)) 
 
+
+
 ```
 
 ## Plotting Recruitment Overtime at Transects
@@ -47,11 +52,27 @@ The function `transect-recruitment` is sourced locally from the `recruitment-vis
 
 ```{r}
 source(here::here("vedika-r-files", "recruitment-visual-function.R"))
+source(here::here("vedika-r-files", "recruitment-compiled-function.R"))
 ```
 
-```{r}
+```{r, fig.height = 5, fig.width=9}
 # Generate plots for each transect (ex. at site LTER1 for BR)
-transect_recruitment(coral_data = clean_coral, site_name = "LTER2", habitat = "BR")
+#transect_recruitment(coral_data = clean_coral, site_name = "LTER2", habitat = "BR")
+
+# Transect-level recruitment across all sites and habitats
+p <- plot_recruitment(
+  coral_data = clean_coral
+  #facet_level = "habitat"
+)
+
+ggsave(
+     "recruitment_plot.png",
+     plot = p,
+     width = 10,
+     height = 5,
+     bg = "transparent" 
+   )
+
 ```
 
 ## Plotting Recruitment Overtime at Sites
@@ -78,6 +99,7 @@ habitat_recruitment(clean_coral)
 coral <- read_csv(here("vedika-r-files", "data", "volume_corals.csv"))
 
 source(here("survival", "R", "survival_fig_function.R"))
+source(here::here("combined_demography", "demography_function.R"))
 ```
 
 ```{r}
@@ -107,4 +129,34 @@ coral_death <- coral %>%
 
 ```{r}
 survival_plot(data = coral_death, site = "LTER2", habitat = "BR")
+plot_recruitment()
+```
+
+```{r}
+## Let's practice with combine demographic function
+demography_plot(data = clean_coral,
+  profile_filter = "recruitment",
+  site_filter = "LTER1",
+  habitat_filter = "BR",
+  by_transect = T)
+
+
+######
+demography_plot_test(
+  data = clean_coral,
+  profile_filter = "growth",
+  site_filter = "LTER1",
+  habitat_filter = "BR",
+  by_transect = TRUE
+)
+
+#### 
+demography_plot(
+  data = clean_coral,
+  profile_filter = "recruitment",
+  site_filter = "LTER1",
+  habitat_filter = "BR",
+  by_transect = F
+)
+
 ```
