@@ -1,0 +1,142 @@
+---
+title: "animated_figure_drafts"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(gganimate)
+library(rgl)
+library(rayshader)
+library(rlang)
+library(plotly)
+```
+
+```{r}
+coral <- read_csv(here::here("..", "eds-coral-data-storage-management", "data", "volume_corals.csv"), na = c("UK", "Na", "?", "MK", "Remove, off transect in P9", "Unsampled", "unsampled", "NA", "US", "NS", "MissingObs", "HA", "Dead", "D", "dead", "v", "G")) %>% 
+  mutate(y_scaled = y / 100,
+         z_scaled = z / 100)
+```
+```{r}
+coral_colors <- c(
+    Acr = "blue", 
+    Poc = "red", 
+    Por = "darkgreen", 
+    Mil = "darkorange"
+  )
+
+
+sph_vol <- function(l, w, h){
+  v = ((l + w)/2)/2**3 * (4/3) * h
+return(v)
+}
+
+cyl_vol <- function(l, w, h){
+  v = (((l + w)/2)/2)**2 * 3.14 * h
+return(v)
+}
+
+# Calculate volume of pocillopera:
+coral_volume_poc <- coral %>% 
+  filter(site == "LTER1",
+         taxa == "Poc") %>% 
+  rowwise() %>% 
+  mutate(volume = sph_vol(length, width, height)) %>% 
+  ungroup()
+
+coral_volume <- coral %>% 
+  filter(site == "LTER1",
+         taxa != "Poc") %>% 
+  rowwise() %>% 
+  mutate(volume = cyl_vol(length, width, height)) %>% 
+  ungroup()
+
+coral_volume_mod <- rbind(coral_volume_poc, coral_volume)
+
+
+
+```
+
+```{r}
+plot_3d <- function(site_name, habitat_type, transect_number)
+  
+  {symbol_map <- c( # Assign shapes to coral genera
+  "Acr" = "diamond",
+  "Poc" = "circle",
+  "Por" = "square",
+  "Mil" = "cross"
+)
+  
+# define color for each taxa (optional but helps distinguish)
+coral_colors <- c(
+    Acr = "blue", 
+    Poc = "red", 
+    Por = "darkgreen", 
+    Mil = "darkorange"
+  )
+
+coral_volume_mod$symbol <- symbol_map[coral_volume_mod$taxa]
+
+
+vol <- coral_volume_mod %>% 
+  filter(site == site_name &
+    habitat == habitat_type &
+           transect == transect_number) %>% 
+  mutate(volume_scaled = volume / 10)
+
+plot_ly(vol, 
+        x = ~y_scaled, 
+        y = ~x, 
+        z = ~z_scaled,
+        frame = ~year,          # add this
+        type = "scatter3d", 
+        mode = "markers",
+        color = ~taxa,
+        colors = coral_colors,
+        symbol = ~taxa,
+        symbols = symbol_map,
+        marker = list(
+          size = ~volume_scaled,
+          sizemode = "area"
+        ),
+        text = ~paste("Taxa:", taxa, "<br>Volume:", volume),
+        hoverinfo = "text") %>%
+  layout(
+    width = 900,
+    height = 500, 
+    scene = list(
+      xaxis = list(title = "y_scaled"),
+      yaxis = list(title = "x"),
+      zaxis = list(title = "z_scaled"), 
+      aspectmode = "manual",
+      aspectratio = list(x = 1, y = 5, z = 1)
+    )) %>%
+  animation_opts(
+    frame = 1500,
+    transition = 0,   # set to 0 for 3d - transitions can cause issues
+    redraw = TRUE     # important for 3d plots
+  ) %>%
+    animation_slider(
+      currentvalue = list(prefix = "Year: ")
+    )}
+
+
+plot_3d("LTER1", "OR", "T01")
+```
+```{r}
+vol <- coral_volume_mod %>% 
+  mutate(volume_scaled = volume / 100)
+
+vol %>% 
+  filter(site == "LTER1", habitat == "BR") %>% 
+  ggplot(aes(x,y_scaled, group = coral_number)) +
+  geom_point(aes(color = taxa, size = volume_scaled), show.legend = FALSE) +
+  scale_color_manual(values = coral_colors) +
+  facet_grid(taxa~transect) +
+  theme(aspect.ratio = 0.2) +
+  transition_states(year,
+    transition_length = 2,
+    state_length = 1) +
+  labs(title = 'Year: {closest_state}')
+```
+
