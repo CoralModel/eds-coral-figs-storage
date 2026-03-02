@@ -35,8 +35,8 @@ demography_plot <- function(data, profile_filter, site_filter, habitat_filter = 
       ggplot(aes(x = size_t0, y = size_t1, color = taxa)) +
       geom_point(alpha = 0.5) +
       scale_color_manual(values = coral_colors) +
-      scale_x_log10(breaks = 10^(-1:5)) +
-      scale_y_log10(breaks = 10^(-1:5)) +
+      scale_x_log10(breaks = 10^(-1:5), labels = scales::label_log()) + 
+      scale_y_log10(breaks = 10^(-1:5), labels = scales::label_log()) +
       coord_equal() +
       theme_classic() +
       theme(legend.position = "none",
@@ -86,7 +86,7 @@ demography_plot <- function(data, profile_filter, site_filter, habitat_filter = 
       ggplot(aes(x = volume, y = survival, color = taxa)) +
       geom_point(alpha = 0.5) +
       scale_color_manual(values = coral_colors) +
-      scale_x_log10(breaks = 10^(-1:5)) +
+      scale_x_log10(breaks = 10^(-1:5), labels = scales::label_log()) +
       theme_classic() +
       theme(legend.position = "none",
             strip.background = element_rect(fill = "gray40"),
