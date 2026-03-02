@@ -41,7 +41,7 @@ demography_plot <- function(data, profile_filter, site_filter, habitat_filter = 
       theme_classic() +
       theme(legend.position = "none",
             strip.background = element_rect(fill = "gray40"),
-            strip.text.x = element_text(color = "white"),
+            strip.text.x = element_markdown(color = "white"),
             strip.text.y = element_markdown(color = "white"),
             panel.background = element_rect(fill = "transparent"),
             plot.background = element_rect(fill = "transparent"))
@@ -90,7 +90,7 @@ demography_plot <- function(data, profile_filter, site_filter, habitat_filter = 
       theme_classic() +
       theme(legend.position = "none",
             strip.background = element_rect(fill = "gray40"),
-            strip.text.x = element_text(color = "white"),
+            strip.text.x = element_markdown(color = "white"),
             strip.text.y = element_markdown(color = "white"),
             panel.background = element_rect(fill = "transparent"),
             plot.background = element_rect(fill = "transparent"))
@@ -130,7 +130,7 @@ demography_plot <- function(data, profile_filter, site_filter, habitat_filter = 
       theme(axis.text.x = element_text(angle = 45, vjust = 0.5),
             legend.position = "none", 
                   strip.background = element_rect(fill = "gray40"),
-                  strip.text.x = element_text(color = "white"),
+                  strip.text.x = element_markdown(color = "white"),
                   strip.text.y = element_markdown(color = "white"),
                   panel.background = element_rect(fill = "transparent"),
                   plot.background = element_rect(fill = "transparent")) 
