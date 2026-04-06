@@ -10,6 +10,7 @@ library(rgl)
 library(rayshader)
 library(rlang)
 library(plotly)
+library(ggimage)
 ```
 
 ```{r}
@@ -35,6 +36,9 @@ cyl_vol <- function(l, w, h){
   v = (((l + w)/2)/2)**2 * 3.14 * h
 return(v)
 }
+
+
+
 
 # Calculate volume of pocillopera:
 coral_volume_poc <- coral %>% 
@@ -133,6 +137,33 @@ vol %>%
   geom_point(aes(color = taxa, size = volume_scaled), show.legend = FALSE) +
   scale_color_manual(values = coral_colors) +
   facet_grid(taxa~transect) +
+  theme(aspect.ratio = 0.2) +
+  transition_states(year,
+    transition_length = 2,
+    state_length = 1) +
+  labs(title = 'Year: {closest_state}')
+```
+
+```{r}
+images <- list.files(path = here::here("animated_figures", "images"), pattern="png", full.names = TRUE, include.dirs =  TRUE)
+
+img_df <- data.frame(taxa = c("Acr", "Mil", "Poc", "Por"),
+                     image = images)
+
+coral_img <- left_join(coral_volume_mod, img_df)
+  
+```
+```{r}
+coral_img %>% 
+  filter(site == "LTER1" & 
+           habitat == "BR" & 
+           transect == "T03" &
+           !is.na(length) &
+           taxa != "Por") %>% 
+  mutate(volume_scaled = volume / 1000000000) %>% 
+  ggplot(aes(x,y_scaled)) +
+  geom_image(aes(image = image, size = volume_scaled)) +
+  theme_light() +
   theme(aspect.ratio = 0.2) +
   transition_states(year,
     transition_length = 2,
