@@ -1,7 +1,10 @@
 # Coral Demography Figure Storage
 
-<img width="915" height="289" alt="figure" src="https://github.com/user-attachments/assets/ef6d6a54-8a90-43a8-ac37-0c8b1dbe7058" />
-This repository contains code to reproduce all figures generated for the MCR LTER coral demography project. Figures fall into two categories: **demography profiles** summarizing vital rates (recruitment, growth, survival) by taxa, habitat, and bleaching period, and **spatiotemporal figures** visualizing coral dynamics at the transect level across sites and survey years.
+<img width="915" height="289" alt="figure" src="https://github.com/user-attachments/assets/ef6d6a54-8a90-43a8-ac37-0c8b1dbe7058"/>
+<br>
+
+
+This repository contains code to produce all figures generated for the MCR LTER coral demography project. Figures fall into two categories: **demography profiles** summarizing demographic rates (recruitment, growth, survival) by taxa, habitat, and bleaching period, and **spatiotemporal figures** visualizing coral dynamics at the transect level across sites and survey years.
 
 ## Repository structure
 
@@ -17,7 +20,7 @@ This repository contains code to reproduce all figures generated for the MCR LTE
 
 ## Data access
 
-Raw data are sourced from the **Moorea Coral Reef (MCR) LTER** and are not yet publicly available. Processed input data are produced by the companion data cleaning repository. Please contact the authors for data access inquiries.
+Raw data are sourced from the **Moorea Coral Reef (MCR) LTER** and are not yet publicly available. Processed input data are produced by the companion data cleaning repository.
 
 ## Authors
 
