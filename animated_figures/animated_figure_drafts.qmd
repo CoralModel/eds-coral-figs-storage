@@ -14,9 +14,7 @@ library(ggimage)
 ```
 
 ```{r}
-coral <- read_csv(here::here("..", "eds-coral-data-storage-management", "data", "volume_corals.csv"), na = c("UK", "Na", "?", "MK", "Remove, off transect in P9", "Unsampled", "unsampled", "NA", "US", "NS", "MissingObs", "HA", "Dead", "D", "dead", "v", "G")) %>% 
-  mutate(y_scaled = y / 100,
-         z_scaled = z / 100)
+coral <- read_csv(here::here("..", "eds-coral-data-storage-management", "analysisdata", "volume_corals.csv"))
 ```
 ```{r}
 coral_colors <- c(
@@ -109,5 +107,73 @@ coral_img %>%
     transition_length = 2,
     state_length = 1) +
   labs(title = 'Year: {closest_state}')
+```
+
+## POC FIG
+Assign volumes to dead corals to visualize
+```{r}
+coral_death <- coral %>% 
+  group_by(coral_number) %>%
+  arrange(year) %>% 
+  filter(str_detect(transect, "T")) %>% 
+  mutate(current_volume = case_when(
+    is.na(size_t0) ~ size_t_minus1,
+    TRUE~ size_t0
+  ),
+  survival = case_when(
+    dyn_death == 1 ~ 0,
+    is.na(length) ~ NA,
+    TRUE ~ 1
+  )) %>% 
+  ungroup()
+```
+
+Denote dead and recruit corals
+```{r}
+poc_dyn <- coral_death %>% 
+  filter(taxa == "Poc") %>% 
+  mutate(taxa_class = case_when(
+    dyn_death == 1 ~ "Poc_dead",
+    dyn_recruitment == 1 ~ "Poc_recruit",
+    TRUE ~ "Poc"
+  ))
+```
+
+Assign images
+```{r}
+images_poc <- list.files(pattern="png", include.dirs =  TRUE)
+
+img_df_poc <- data.frame(taxa_class = c("Acr", "Mil", "Poc_dead", "Poc_recruit", "Poc", "Por"),
+                     image = images_poc)
+
+coral_poc_img <- left_join(poc_dyn, img_df_poc)
+```
+
+Create figure
+```{r}
+library(ggimage)
+
+practice <- coral_poc_img %>% 
+  filter(x < 5 & 
+           site == "LTER1" &
+           habitat == "BR" & 
+           transect == "T1" &
+           !is.na(length)) %>% 
+  ggplot(aes(x,y_m)) +
+  geom_image(aes(image = image, size = current_volume, group = coral_number)) +
+  scale_size(range = c(0.01, 0.25), 
+           name = "Volume (cm³)",
+           trans = "log") +
+  theme_light() +
+  #coord_fixed(ratio = 1) +
+  #theme(aspect.ratio = 0.4) +
+  theme(legend.position = "none") +
+  transition_states(year,
+    transition_length = 2,
+    state_length = 3) +
+  labs(title = 'Year: {closest_state}')
+
+animate(practice, height = 500, width =800)
+anim_save("practice.gif", res = 300)
 ```
 
