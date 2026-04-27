@@ -1,25 +1,30 @@
-# eds-coral-figs-storage
+# Coral Demography Figure Storage
 
-## Description
+<img width="915" height="289" alt="figure" src="https://github.com/user-attachments/assets/ef6d6a54-8a90-43a8-ac37-0c8b1dbe7058" />
+This repository contains code to reproduce all figures generated for the MCR LTER coral demography project. Figures fall into two categories: **demography profiles** summarizing vital rates (recruitment, growth, survival) by taxa, habitat, and bleaching period, and **spatiotemporal figures** visualizing coral dynamics at the transect level across sites and survey years.
 
-This repository contains all figures generated for this capstone project. Initial figures for size-dependent coral demographic parameters (i.e., recruitment, probability of survival, and growth rate) are produced and stored here by the group member responsible for each respective demographic variable.
+## Repository structure
 
-## Repository Structure
-
-The structure of this repository is as follows (subject to updates):
-
-```         
+```
+├── demography_profiles/          # Figures summarizing demography rate estimates by taxa
+├── spatiotemporal/               # Transect-level figures across sites and years
 ├── eds-coral-figs-storage.Rproj
 ├── README.md
-└── vedika-r-files
-    ├── initial-recruitment-figures
-    └── recruitment-visual-function.R
+└── LICENSE
 ```
 
-## Data Access
+> **Note:** Input data are read from the companion data cleaning repository [`eds-coral-data-storage-management`](https://github.com/) and are not stored here.
 
-The data utilized for this capstone project is not housed in this repository and is intended to be kept private.
+## Data access
 
-## Contributors
+Raw data are sourced from the **Moorea Coral Reef (MCR) LTER** and are not yet publicly available. Processed input data are produced by the companion data cleaning repository. Please contact the authors for data access inquiries.
 
-This repository is maintained by Joaquin Sandoval, Kylie Newcomer, and Vedika Shirtekar as part of the Master of Environmental Data Science program at UC Santa Barbara. This work was completed as part of the Coral Model Capstone Project at the Bren School of Environmental Science and Management.
+## Authors
+
+- [Kylie Newcomer](https://github.com/kylienewcomer)
+- [Joaquin Sandoval](https://github.com/sandovaljoaquin)
+- [Vedika Shirtekar](https://github.com/vedikaS-byte)
+
+## References & acknowledgements
+
+Data are from the **Moorea Coral Reef Long Term Ecological Research** (MCR LTER) site, funded by the National Science Foundation.
