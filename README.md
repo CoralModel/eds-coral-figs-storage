@@ -1,7 +1,11 @@
 # Coral Demography Figure Storage
 
-<img width="915" height="289" alt="figure" src="https://github.com/user-attachments/assets/ef6d6a54-8a90-43a8-ac37-0c8b1dbe7058"/>
-<br>
+<figure>
+  <img src="https://github.com/user-attachments/assets/9b768156-d7a6-4a82-87ea-cb85b0a55533"
+       alt="Coral reef in Mo'orea with two surgeonfish swimming over branching and mounding corals" />
+  <figcaption>Photo by Pierrick Harnay</figcaption>
+</figure>
+
 
 
 This repository contains code to produce all figures generated for the MCR LTER coral demography project. Figures fall into two categories: **demography profiles** summarizing demographic rates (recruitment, growth, survival) by taxa, habitat, and bleaching period, and **spatiotemporal figures** visualizing coral dynamics at the transect level across sites and survey years.
