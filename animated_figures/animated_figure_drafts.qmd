@@ -14,16 +14,23 @@ library(ggimage)
 ```
 
 ```{r}
-coral <- read_csv(here::here("..", "eds-coral-data-storage-management", "analysisdata", "volume_corals.csv"))
+coral <- read_csv(here::here("..", "eds-coral-data-storage-management", "analysisdata", "coral_demography_analysis_data.csv"), guess_max = 10000)
 ```
 ```{r}
+# coral_colors <- c(
+#     Acr = "blue", 
+#     Poc = "red", 
+#     Por = "darkgreen", 
+#     Mil = "darkorange",
+#     dead = "grey"
+#   )
 coral_colors <- c(
-    Acr = "blue", 
-    Poc = "red", 
-    Por = "darkgreen", 
-    Mil = "darkorange"
-  )
-
+  "Poc" = "#F4A6C0",  # light pink
+  "Por" = "#D4A017",  # gold
+  "Acr" = "#E63946",  # light red
+   "Mil" = "#FF7F2A",
+    "dead" = "grey"
+)
 
 sph_vol <- function(l, w, h){
   v = ((l + w)/2)/2**3 * (4/3) * h
@@ -64,17 +71,17 @@ coral_volume_mod <- rbind(coral_volume_poc, coral_volume)
 vol <- coral_volume_mod %>% 
   mutate(volume_scaled = volume / 100)
 
-vol %>% 
-  filter(site == "LTER1", habitat == "BR") %>% 
-  ggplot(aes(x,y_scaled, group = coral_number)) +
-  geom_point(aes(color = taxa, size = volume_scaled), show.legend = FALSE) +
-  scale_color_manual(values = coral_colors) +
-  facet_grid(taxa~transect) +
-  theme(aspect.ratio = 0.2) +
-  transition_states(year,
-    transition_length = 2,
-    state_length = 1) +
-  labs(title = 'Year: {closest_state}')
+# vol %>% 
+#   filter(site == "LTER1", habitat == "BR") %>% 
+#   ggplot(aes(x,y_scaled, group = coral_number)) +
+#   geom_point(aes(color = taxa, size = volume_scaled), show.legend = FALSE) +
+#   scale_color_manual(values = coral_colors) +
+#   facet_grid(taxa~transect) +
+#   theme(aspect.ratio = 0.2) +
+#   transition_states(year,
+#     transition_length = 2,
+#     state_length = 1) +
+#   labs(title = 'Year: {closest_state}')
 ```
 
 ```{r}
@@ -86,57 +93,38 @@ img_df <- data.frame(taxa = c("Acr", "Mil", "Poc", "Por"),
 coral_img <- left_join(coral_volume_mod, img_df)
 ```
 ```{r}
-coral_img %>% 
-  filter(site == "LTER1" & 
-           habitat == "BR" & 
-           transect == "T03" &
-           !is.na(length) &
-           taxa != "Por") %>%
-  ggplot(aes(x,y_scaled, group = coral_number)) +
-  geom_image(aes(image = image, size = volume)) +
-  theme_light() +
-  theme(aspect.ratio = 0.2) +
-  scale_size(range = c(0.02, 0.2), 
-           name = "Volume (cm³)",
-           trans = "log") +
-  theme_light() +
-  transition_states(year,
-    transition_length = 2,
-    state_length = 3) +
-  transition_states(year,
-    transition_length = 2,
-    state_length = 1) +
-  labs(title = 'Year: {closest_state}')
+# coral_img %>% 
+#   filter(site == "LTER1" & 
+#            habitat == "BR" & 
+#            transect == "T03" &
+#            !is.na(length) &
+#            taxa != "Por") %>%
+#   ggplot(aes(x,y_scaled, group = coral_number)) +
+#   geom_image(aes(image = image, size = volume)) +
+#   theme_light() +
+#   theme(aspect.ratio = 0.2) +
+#   scale_size(range = c(0.02, 0.2), 
+#            name = "Volume (cm³)",
+#            trans = "log") +
+#   theme_light() +
+#   transition_states(year,
+#     transition_length = 2,
+#     state_length = 3) +
+#   transition_states(year,
+#     transition_length = 2,
+#     state_length = 1) +
+#   labs(title = 'Year: {closest_state}')
 ```
 
 ## POC FIG
 Assign volumes to dead corals to visualize
 ```{r}
-coral_death <- coral %>% 
-  group_by(coral_number) %>%
-  arrange(year) %>% 
-  filter(str_detect(transect, "T")) %>% 
-  mutate(current_volume = case_when(
-    is.na(size_t0) ~ size_t_minus1,
-    TRUE~ size_t0
-  ),
-  survival = case_when(
-    dyn_death == 1 ~ 0,
-    is.na(length) ~ NA,
-    TRUE ~ 1
-  )) %>% 
-  ungroup()
+
 ```
 
 Denote dead and recruit corals
 ```{r}
-poc_dyn <- coral_death %>% 
-  filter(taxa == "Poc") %>% 
-  mutate(taxa_class = case_when(
-    dyn_death == 1 ~ "Poc_dead",
-    dyn_recruitment == 1 ~ "Poc_recruit",
-    TRUE ~ "Poc"
-  ))
+
 ```
 
 Assign images
@@ -149,31 +137,57 @@ img_df_poc <- data.frame(taxa_class = c("Acr", "Mil", "Poc_dead", "Poc_recruit",
 coral_poc_img <- left_join(poc_dyn, img_df_poc)
 ```
 
+```{r}
+coral_death <- coral %>% 
+  group_by(coral_id) %>%
+  arrange(coral_id, year) %>% 
+  mutate(current_volume = case_when(
+    is.na(size_t0) ~ size_t_minus1,
+    TRUE~ size_t0
+  ),
+  survival = case_when(
+    dyn_death == 1 ~ 0,
+    is.na(l) ~ NA,
+    TRUE ~ 1
+  )) %>% 
+  ungroup()
+```
+
+```{r}
+coral_dyn <- coral_death %>% 
+  mutate(taxa_class = case_when(
+    dyn_death == 1 ~ "Dead",
+    TRUE ~ taxa
+  ))
+```
+
 Create figure
 ```{r}
 library(ggimage)
 
-practice <- coral_poc_img %>% 
+plot <- coral_dyn %>% 
   filter(x < 5 & 
            site == "LTER1" &
            habitat == "BR" & 
-           transect == "T1" &
-           !is.na(length)) %>% 
-  ggplot(aes(x,y_m)) +
-  geom_image(aes(image = image, size = current_volume, group = coral_number)) +
-  scale_size(range = c(0.01, 0.25), 
-           name = "Volume (cm³)",
-           trans = "log") +
+           transect == "T01" &
+           !is.na(current_volume)
+         ) %>% 
+  mutate(y_m = y / 100) %>% 
+  ggplot(aes(x, y_m)) +
+  geom_point(aes(color = taxa_class, size = current_volume, group = coral_id)) +
+  scale_size(#range = c(0.01, 0.5), 
+           name = "Volume (cm³)") +
+  scale_color_manual(values = coral_colors) +
   theme_light() +
-  #coord_fixed(ratio = 1) +
-  #theme(aspect.ratio = 0.4) +
+  coord_fixed(ratio = 1) +
   theme(legend.position = "none") +
   transition_states(year,
     transition_length = 2,
     state_length = 3) +
   labs(title = 'Year: {closest_state}')
 
-animate(practice, height = 500, width =800)
-anim_save("practice.gif", res = 300)
+animate(plot,
+        duration = 30,
+        fps = 25, height = 500, width = 2500, res = 300)
 ```
 
