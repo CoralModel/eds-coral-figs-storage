@@ -6,11 +6,9 @@ format: html
 ```{r}
 library(tidyverse)
 library(gganimate)
-library(rgl)
-library(rayshader)
 library(rlang)
-library(plotly)
-library(ggimage)
+library(gifski)
+library(magick)
 ```
 
 ```{r}
@@ -36,21 +34,6 @@ coral_colors <- c(
 
 ```
 
-
-```{r}
-
-# vol %>% 
-#   filter(site == "LTER1", habitat == "BR") %>% 
-#   ggplot(aes(x,y_scaled, group = coral_number)) +
-#   geom_point(aes(color = taxa, size = volume_scaled), show.legend = FALSE) +
-#   scale_color_manual(values = coral_colors) +
-#   facet_grid(taxa~transect) +
-#   theme(aspect.ratio = 0.2) +
-#   transition_states(year,
-#     transition_length = 2,
-#     state_length = 1) +
-#   labs(title = 'Year: {closest_state}')
-```
 
 ```{r}
 # images <- list.files(path = here::here("animated_figures", "images"), pattern="png", full.names = TRUE, include.dirs =  TRUE)
@@ -84,26 +67,6 @@ coral_colors <- c(
 #   labs(title = 'Year: {closest_state}')
 ```
 
-## POC FIG
-Assign volumes to dead corals to visualize
-```{r}
-
-```
-
-Denote dead and recruit corals
-```{r}
-
-```
-
-Assign images
-```{r}
-# images_poc <- list.files(pattern="png", include.dirs =  TRUE)
-# 
-# img_df_poc <- data.frame(taxa_class = c("Acr", "Mil", "Poc_dead", "Poc_recruit", "Poc", "Por"),
-#                      image = images_poc)
-# 
-# coral_poc_img <- left_join(poc_dyn, img_df_poc)
-```
 
 ```{r}
 coral_death <- coral %>% 
@@ -133,32 +96,39 @@ coral_dyn <- coral_death %>%
 Create figure
 ```{r}
 plot <- coral_dyn %>% 
-  filter(x < 1 & 
-           site == "LTER1" &
+  filter(site == "LTER1" &
            habitat == "BR" & 
            transect == "T01" &
            !is.na(current_volume)
          ) %>% 
   mutate(y_m = y / 100) %>% 
   ggplot(aes(x, y_m)) +
-  geom_point(aes(color = taxa_class, size = current_volume + 5, group = coral_id)) +
-  geom_point(aes(color = taxa, size = current_volume, group = coral_id)) +
+  #geom_point(aes(color = taxa_class, size = current_volume * 2, group = coral_id)) + # Add rings for recruitment and death
+  geom_point(shape = 21, aes(color = taxa_class, fill = taxa, size = current_volume, group = coral_id)) +
   scale_size(range = c(0.01, 5), 
            name = "Volume (cm³)") +
   scale_color_manual(values = coral_colors) +
   scale_fill_manual(values = coral_colors) +
   theme_light() +
   coord_fixed(ratio = 1) +
-  theme(legend.position = "none",
-        title = element_text(size = 12))+
-  labs(title = 'Year: {closest_state}') +
+  labs(title = 'LTER 1 lagoon transect 1 coral population year: {closest_state}',
+       x = "Transect length (m)",
+       y = "Transect width (m)") +
   transition_states(year,
-    transition_length = 2,
-    state_length = 3) +
-  labs(title = 'Year: {closest_state}')
+    transition_length = 4,
+    state_length = 2) +
+  theme_bw() +
+  theme(legend.position = "none",
+        title = element_text(size = 8),
+        axis.title = element_text(size = 6))
 
-animate(plot,
+anim <- animate(plot,
         duration = 30,
-        fps = 25, height = 500, width = 2500, res = 300)
+        fps = 25, height = 500, width = 2500, res = 300,
+        renderer = gifski_renderer())
+
+magick::image_read(anim) %>%
+  magick::image_trim() %>%          # auto-trims white borders
+  magick::image_write_gif("coral_trimmed.gif")
 ```
 
