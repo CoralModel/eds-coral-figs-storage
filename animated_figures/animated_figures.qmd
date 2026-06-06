@@ -34,40 +34,6 @@ coral_colors <- c(
 
 ```
 
-
-```{r}
-# images <- list.files(path = here::here("animated_figures", "images"), pattern="png", full.names = TRUE, include.dirs =  TRUE)
-# 
-# img_df <- data.frame(taxa = c("Acr", "Mil", "Poc", "Por"),
-#                      image = images)
-# 
-# coral_img <- left_join(coral_volume_mod, img_df)
-```
-```{r}
-# coral_img %>% 
-#   filter(site == "LTER1" & 
-#            habitat == "BR" & 
-#            transect == "T03" &
-#            !is.na(length) &
-#            taxa != "Por") %>%
-#   ggplot(aes(x,y_scaled, group = coral_number)) +
-#   geom_image(aes(image = image, size = volume)) +
-#   theme_light() +
-#   theme(aspect.ratio = 0.2) +
-#   scale_size(range = c(0.02, 0.2), 
-#            name = "Volume (cm³)",
-#            trans = "log") +
-#   theme_light() +
-#   transition_states(year,
-#     transition_length = 2,
-#     state_length = 3) +
-#   transition_states(year,
-#     transition_length = 2,
-#     state_length = 1) +
-#   labs(title = 'Year: {closest_state}')
-```
-
-
 ```{r}
 coral_death <- coral %>% 
   group_by(coral_id) %>%
