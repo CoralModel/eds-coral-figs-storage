@@ -98,3 +98,76 @@ magick::image_read(anim) %>%
   magick::image_write_gif("coral_trimmed.gif")
 ```
 
+```{r}
+gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "BR", transect_number = "T01")
+
+gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "BR", transect_number = "T02")
+
+gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "BR", transect_number = "T03")
+
+gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "BR", transect_number = "T04")
+
+gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "OR", transect_number = "T01")
+
+gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "OR", transect_number = "T02")
+
+gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "OR", transect_number = "T03")
+
+gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "OR", transect_number = "T04")
+
+```
+
+```{r}
+gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "BR", transect_number = "T01")
+
+gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "BR", transect_number = "T02")
+
+gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "BR", transect_number = "T03")
+
+gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "BR", transect_number = "T04")
+
+gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "OR", transect_number = "T01")
+
+gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "OR", transect_number = "T02")
+
+gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "OR", transect_number = "T03")
+
+gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "OR", transect_number = "T04")
+
+```
+```{r}
+gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "BR", transect_number = "T01")
+
+gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "BR", transect_number = "T02")
+
+gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "BR", transect_number = "T03")
+
+gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "BR", transect_number = "T04")
+
+gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "OR", transect_number = "T01")
+
+gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "OR", transect_number = "T02")
+
+gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "OR", transect_number = "T03")
+
+gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "OR", transect_number = "T04")
+
+```
+```{r}
+gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "BR", transect_number = "T01")
+
+gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "BR", transect_number = "T02")
+
+gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "BR", transect_number = "T03")
+
+gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "BR", transect_number = "T04")
+
+gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "OR", transect_number = "T01")
+
+gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "OR", transect_number = "T02")
+
+gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "OR", transect_number = "T03")
+
+gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "OR", transect_number = "T04")
+```
+
