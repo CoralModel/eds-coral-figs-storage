@@ -135,6 +135,7 @@ gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "OR", transect_n
 gif_maker(data = coral_dyn, lter_site = "LTER2", habitat_code = "OR", transect_number = "T04")
 
 ```
+
 ```{r}
 gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "BR", transect_number = "T01")
 
@@ -153,6 +154,7 @@ gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "OR", transect_n
 gif_maker(data = coral_dyn, lter_site = "LTER4", habitat_code = "OR", transect_number = "T04")
 
 ```
+
 ```{r}
 gif_maker(data = coral_dyn, lter_site = "LTER5", habitat_code = "BR", transect_number = "T01")
 
