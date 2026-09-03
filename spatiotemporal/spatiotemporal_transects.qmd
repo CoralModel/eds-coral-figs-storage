@@ -104,7 +104,7 @@ source(here::here("R", "gif.r"))
 
 
 ```{r}
-gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "BR", transect_number = "T01")
+# gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "BR", transect_number = "T01")
 
 # gif_maker(data = coral_dyn, lter_site = "LTER1", habitat_code = "BR", transect_number = "T02")
 # 

@@ -8,12 +8,12 @@
 
 
 
-This repository contains code to produce all figures generated for the MCR LTER coral demography project. Figures fall into two categories: **demography profiles** summarizing demographic rates (recruitment, growth, survival) by taxa, habitat, and bleaching period, and **spatiotemporal figures** visualizing coral dynamics at the transect level across sites and survey years.
+This repository contains code to produce the spatiotemporal figures generated for the MCR LTER coral demography project visualizing coral dynamics at the transect level across sites and survey years.
 
 ## Repository structure
 
 ```
-├── demography_profiles/          # Figures summarizing demography rate estimates by taxa
+├── R                             # Houses function for creating gifs
 ├── spatiotemporal/               # Transect-level figures across sites and years
 ├── eds-coral-figs-storage.Rproj
 ├── README.md
